@@ -5,3 +5,9 @@ class TrendingNewsGetSuccessState extends NewsStates{}
 class TrendingNewsGetErrorState extends NewsStates{ late final String error;
 TrendingNewsGetErrorState(this.error);
 }
+class NewsArticlesCategoryLoadingState extends NewsStates{}
+class NewsArticlesCategorySuccessState extends NewsStates{}
+class NewsArticlesCategoryErrorState extends NewsStates{ late final String error;
+NewsArticlesCategoryErrorState(this.error);
+}
+class NewsChangeCategoryState extends NewsStates{}
