@@ -9,6 +9,8 @@ import 'package:news_pp/styles/colors.dart';
 import '../cubit/cubit.dart';
 import '../cubit/states.dart';
 import '../data_models/news_model.dart';
+import '../modules/trending.dart';
+import '../shared/components/article_card.dart';
 import '../shared/components/texts/medium.dart';
 
 class Home extends StatelessWidget {
@@ -24,7 +26,6 @@ class Home extends StatelessWidget {
             firstArticle = cubit.trending.first;
           }
           return Scaffold(
-            backgroundColor: Colors.white,
             appBar: AppBar(
               backgroundColor: Colors.white,
               actions: [
@@ -94,7 +95,9 @@ class Home extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: 16,),
-                   HeadingRow(onSeeAllPressed: (){}, title: 'Trending'),
+                   HeadingRow(onSeeAllPressed: (){
+                     Navigator.push(context, MaterialPageRoute(builder: (context)=>Trending()));
+                   }, title: 'Trending'),
                     SizedBox(height: 16,),
                     if (firstArticle == null)
                       SizedBox(
@@ -102,46 +105,10 @@ class Home extends StatelessWidget {
                           width: double.infinity,
                           child: const Center(child: CircularProgressIndicator()))
                     else
-                      Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                              Card(
-                                elevation: 6,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                                clipBehavior: Clip.antiAlias,
-                                child: Image.network(
-                                  firstArticle.urlToImage ?? 'https://cdn-icons-png.flaticon.com/512/3875/3875172.png',
-                                  width: double.infinity,
-                                 height: 200,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            const SizedBox(height: 32),
-                            MediumText(
-                             firstArticle.title ?? '',
-                            ),
-                            const SizedBox(height: 4),
-                            Row(
-                              children: [
-                                SmallText(
-                                 firstArticle.source ?? '',
-                                ),
-                                const SizedBox(width: 12),
-                                 Icon(CupertinoIcons.clock,size: 18,color: bodyTextColor),
-                                const SizedBox(width: 4),
-                                SmallText(
-                                  firstArticle.publishedAt?.toIso8601String().split('T').first ?? '',
-
-                                ),
-                                Spacer(),
-                                SmallText('...')
-                              ],
-                            ),
-
-
-                          ]
+                      ArticleCard(imageUrl: firstArticle.urlToImage  ?? 'https://cdn-icons-png.flaticon.com/512/3875/3875172.png',
+                        title: firstArticle.title ?? '',
+                        source: firstArticle.source ?? '',
+                        publishedAt:   firstArticle.publishedAt?.toIso8601String().split('T').first ?? '',
                       ),
                     SizedBox(height: 16,),
                     HeadingRow(onSeeAllPressed: (){}, title: 'Latest'),
