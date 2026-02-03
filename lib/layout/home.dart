@@ -11,7 +11,7 @@ import '../cubit/states.dart';
 import '../data_models/news_model.dart';
 import '../modules/trending.dart';
 import '../shared/components/article_card.dart';
-import '../shared/components/texts/medium.dart';
+
 
 class Home extends StatelessWidget {
   const Home({super.key});
