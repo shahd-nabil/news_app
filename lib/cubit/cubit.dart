@@ -46,7 +46,6 @@ class NewsCubit extends Cubit<NewsStates> {
   ];
   void getArticlesByCategory(String category) {
     emit(NewsArticlesCategoryLoadingState());
-
     Map<String, dynamic> query = {
       'country': 'us',
       'apiKey': '5ad6ff10bc5c4cb4866eaa2defc0067d',
