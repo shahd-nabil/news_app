@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:news_pp/shared/components/home/Categories_tab.dart';
+import 'package:news_pp/shared/components/home/articles.dart';
 import 'package:news_pp/shared/components/home/heading_row.dart';
 import 'package:news_pp/shared/components/texts/small.dart';
 import 'package:news_pp/styles/colors.dart';
@@ -11,11 +12,13 @@ import '../cubit/states.dart';
 import '../data_models/news_model.dart';
 import '../modules/trending.dart';
 import '../shared/components/article_card.dart';
+import '../shared/components/home/search.dart';
+import '../shared/components/home/trending.dart';
 
 
 class Home extends StatelessWidget {
-  const Home({super.key});
-
+   Home({super.key});
+  final TextEditingController searchController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<NewsCubit, NewsStates>(
@@ -25,6 +28,7 @@ class Home extends StatelessWidget {
           if (cubit.trending.isNotEmpty) {
             firstArticle = cubit.trending.first;
           }
+
           return Scaffold(
             appBar: AppBar(
               backgroundColor: Colors.white,
@@ -68,110 +72,45 @@ class Home extends StatelessWidget {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    SearchBar(
-                      padding: WidgetStateProperty.resolveWith((states) =>
-                          EdgeInsets.symmetric(horizontal: 14),
-                      ),
-                      trailing: [
-                        SvgPicture.asset(
-                          'assets/icons/filter.svg',
-                        ),
-                      ],
-                      elevation: WidgetStateProperty.all(0),
-                      backgroundColor: WidgetStateProperty.all(Colors.white),
-                      shape: WidgetStateOutlinedBorder.resolveWith((states) =>
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(6),
-                            side: BorderSide(
-                              color: bodyTextColor,
-                            ),
-                          )),
-                      leading: SvgPicture.asset(
-                        'assets/icons/search.svg',
-                      ),
-                      hintText: 'Search',
-                      hintStyle: WidgetStateTextStyle.resolveWith((states) =>
-                          TextStyle(color: Colors.grey,),
-                      ),
-                    ),
+                    SearchSection(
+                      controller: searchController,
+                      onChanged: (value) {
+                        cubit.searchArticles(value);
+                    },
+                      onTap: () {
+                        cubit.startSearch();
+                      }, onSubmitted: (value) {
+                        cubit.searchArticles(value);
+                        if (searchController.text.isEmpty){
+                          cubit.stopSearch();
+                        }
+                        FocusScope.of(context).unfocus();
+                    },),
                     SizedBox(height: 16,),
-                   HeadingRow(onSeeAllPressed: (){
-                     Navigator.push(context, MaterialPageRoute(builder: (context)=>Trending()));
-                   }, title: 'Trending'),
-                    SizedBox(height: 16,),
-                    if (firstArticle == null)
+                    if (cubit.isSearching)
+                     ...[if(cubit.searchResults.isEmpty)
                       SizedBox(
-                          height: 290,
-                          width: double.infinity,
-                          child: const Center(child: CircularProgressIndicator()))
-                    else
-                      ArticleCard(imageUrl: firstArticle.urlToImage  ?? 'https://cdn-icons-png.flaticon.com/512/3875/3875172.png',
-                        title: firstArticle.title ?? '',
-                        source: firstArticle.source ?? '',
-                        publishedAt:   firstArticle.publishedAt?.toIso8601String().split('T').first ?? '',
-                      ),
-                    SizedBox(height: 16,),
-                    HeadingRow(onSeeAllPressed: (){}, title: 'Latest'),
-                    SizedBox(height: 16,),
-                    CategoriesTabBar(),
-                    SizedBox(height: 16,),
-                    cubit.latest.isEmpty ? const Center(child: CircularProgressIndicator()):
-                    ListView.separated(
-                      physics: NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: cubit.latest.length,
-                      itemBuilder: (context, index) {
-                        final article = cubit.latest[index];
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Card(
-                                elevation: 0,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                                clipBehavior: Clip.antiAlias,
-                                child: Image.network(
-                                  article.urlToImage ??
-                                      'https://cdn-icons-png.flaticon.com/512/3875/3875172.png',
-                                  height: 100,
-                                  width: 100,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    SmallText(article.title ?? '',fontSize: 12,maxLines:3),
-                                    const SizedBox(height: 8),
-                                        SmallText(article.source ?? '',fontSize: 12,color: Colors.grey,),
-                                    const SizedBox(height: 8),
-                                        Row(
-                                          children: [
-                                            Icon(CupertinoIcons.clock,size: 14,color: Colors.grey),
-                                           const SizedBox(width: 4),
-                                            SmallText(
-                                              article.publishedAt?.toIso8601String().split('T').first ?? '',
-                                                fontSize: 12,color: Colors.grey,
-                                            ),
-                                            Spacer(),
-                                            SmallText('...',fontSize: 12,color: Colors.grey,),
-                                          ],
-                                        ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      }, separatorBuilder: (BuildContext context, int index)=>Divider(
-                      thickness: 1,
-                      color: Colors.grey[200],
-                    ),
-                    )
+                        height: MediaQuery.of(context).size.height * 0.6,
+                        child: const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      )
+                     else
+                       ArticlesListView(articles: cubit.searchResults),
+                       ]
+
+                    else ...[
+                        SizedBox(height: 16,),
+                        TrendingSection(article: firstArticle),
+                        SizedBox(height: 16,),
+                        HeadingRow(onSeeAllPressed: () {}, title: 'Latest'),
+                        SizedBox(height: 16,),
+                        CategoriesTabBar(),
+                        SizedBox(height: 16,),
+                        cubit.latest.isEmpty ? const Center(
+                            child: CircularProgressIndicator()) :
+                            ArticlesListView(articles: cubit.latest)
+          ]
                   ],
                 ),
               ),

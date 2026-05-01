@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:news_pp/cubit/states.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -19,10 +20,9 @@ class NewsCubit extends Cubit<NewsStates> {
   void getTrending() {
     emit(TrendingNewsGetLoadingState());
     DioHelper.getData(
-      url: 'v2/top-headlines',
+      endPoint: 'top-headlines',
       query: {
         'country': 'us',
-        'apiKey': '5ad6ff10bc5c4cb4866eaa2defc0067d',
       },
     ).then((value) {
       final List articlesJson = value.data['articles'];
@@ -30,6 +30,8 @@ class NewsCubit extends Cubit<NewsStates> {
       emit(TrendingNewsGetSuccessState());
     }).catchError((error) {
       emit(TrendingNewsGetErrorState(error.toString()));
+      debugPrint(error.toString());
+
     });
   }
   String selectedCategory = 'all';
@@ -56,7 +58,7 @@ class NewsCubit extends Cubit<NewsStates> {
     }
 
     DioHelper.getData(
-      url: 'v2/top-headlines',
+      endPoint: 'top-headlines',
       query: query,
     ).then((value) {
       final List articlesJson = value.data['articles'];
@@ -75,5 +77,44 @@ class NewsCubit extends Cubit<NewsStates> {
     getArticlesByCategory(selectedCategory);
     emit(NewsChangeCategoryState());
 
+  }
+
+
+  List<Article> searchResults = [];
+  bool isSearching = false;
+  void startSearch() {
+    isSearching = true;
+    emit(NewsSearchLoadingState());
+  }
+  void searchArticles(String queryText) {
+    emit(NewsSearchLoadingState());
+    isSearching = true;
+
+    Map<String, dynamic> query = {
+      'q': queryText,
+      'sortBy': 'publishedAt',
+      'pageSize': 10,
+
+    };
+    DioHelper.getData(
+      endPoint: 'everything',
+      query: query,
+    ).then((value) {
+      final List articlesJson = value.data['articles'];
+
+      searchResults = articlesJson
+          .map((json) => Article.fromJson(json))
+          .toList();
+
+      emit(NewsSearchSuccessState());
+    }).catchError((error) {
+      debugPrint(error.toString());
+      emit(NewsSearchErrorState(error.toString()));
+    });
+  }
+  void stopSearch() {
+    isSearching = false;
+    searchResults.clear();
+    emit(NewsSearchSuccessState());
   }
 }
