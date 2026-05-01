@@ -1,16 +1,11 @@
-# news_pp
+# News App (Flutter)
 
-A new Flutter project.
+A modern news application built with Flutter that allows users to browse trending news, explore articles by category, and search for the latest news in real-time using NewsAPI.
 
-## Getting Started
+## Tech Stack
+Flutter & Dart
+Bloc (Cubit)
+Dio (API handling)
+REST API (NewsAPI)
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+🚧 This project is still under development.
