@@ -37,6 +37,7 @@ class TrendingSection extends StatelessWidget {
               .split('T')
               .first ??
               '',
+          article: article,
         ),
       ],
     );

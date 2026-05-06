@@ -5,13 +5,10 @@ import 'package:flutter_svg/svg.dart';
 import 'package:news_pp/shared/components/home/Categories_tab.dart';
 import 'package:news_pp/shared/components/home/articles.dart';
 import 'package:news_pp/shared/components/home/heading_row.dart';
-import 'package:news_pp/shared/components/texts/small.dart';
 import 'package:news_pp/styles/colors.dart';
 import '../cubit/cubit.dart';
 import '../cubit/states.dart';
 import '../data_models/news_model.dart';
-import '../modules/trending.dart';
-import '../shared/components/article_card.dart';
 import '../shared/components/home/search.dart';
 import '../shared/components/home/trending.dart';
 

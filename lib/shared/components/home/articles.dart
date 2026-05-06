@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../../data_models/news_model.dart';
+import '../../../modules/detailScreen.dart';
 import '../texts/small.dart';
 
 class ArticlesListView extends StatelessWidget {
@@ -23,9 +24,18 @@ class ArticlesListView extends StatelessWidget {
 
         return Padding(
           padding: const EdgeInsets.symmetric(vertical: 8.0),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
+          child: GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => DetailScreen(article: article),
+                ),
+              );
+            },
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
               Card(
                 elevation: 0,
                 shape: RoundedRectangleBorder(
@@ -82,6 +92,7 @@ class ArticlesListView extends StatelessWidget {
                 ),
               ),
             ],
+            ),
           ),
         );
       },
